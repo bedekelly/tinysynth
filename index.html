@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>tinysynth:</title>
+  <link rel="stylesheet" href="./reset.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <h1>synth:</h1>
+
+  <div class="container">
+    <div class="component">
+      <h2>noise-maker:</h2>
+      <button id="sound-button">
+        <canvas id="wave" width="75" height="75"></canvas>
+      </button>
+    </div>
+
+    <div class="component muffler">
+      <h2><label for="muffler-slider">muffler:</label></h2>
+      <input id="muffler-slider" type="range">
+    </div>
+
+    <div class="component batcave disabled">
+      <h2>batcave:</h2>
+      <button id="batcave-button" class="bat-container">
+        <img class="bat" src='bat.svg' alt=''>
+      </button>
+    </div>
+
+  </div>
+  <script type="module" src="animation.js"></script>
+  <script type="module" src="sounds.js"></script>
+
+</body>
+</html>
