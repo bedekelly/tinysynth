@@ -121,8 +121,8 @@ h2 {
 }
 
 .active {
-  background: #3071a9;
-  border-radius: 50%;
+  background: #3071a9 !important;
+  border-radius: 50% !important;
 }
 
 .bat {

@@ -24,16 +24,34 @@ function animate(newTime) {
   }
   if (!stop) requestAnimationFrame(animate);
 }
+requestAnimationFrame(animate);
 
 
-document.querySelector("#sound-button")
-  .addEventListener("click", e => {
+const button = document.querySelector("#sound-button");
+
+
+function toggle() {
   if (stop) {
     stop = false;
-    e.target.classList.add(["active"]);
+    console.log(button);
+    button.classList.add(["active"]);
     requestAnimationFrame(animate);
   } else {
     stop = true;
-    e.target.classList.remove(["active"]);
+    button.classList.remove("active");
   }
-});
+}
+
+function animateKeyListener(event) {
+  if (event.key === "s") {
+    toggle()
+  }
+}
+
+
+document.querySelector("#sound-button")
+  .addEventListener("click", toggle);
+
+
+document.addEventListener("keydown", animateKeyListener);
+document.addEventListener("keyup", animateKeyListener);
