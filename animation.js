@@ -33,7 +33,6 @@ const button = document.querySelector("#sound-button");
 function toggle() {
   if (stop) {
     stop = false;
-    console.log(button);
     button.classList.add(["active"]);
     timestamp = null;
     requestAnimationFrame(animate);

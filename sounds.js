@@ -43,7 +43,7 @@ function toggleReverb() {
 }
 
 
-async function toggleSound() {
+async function toggleSound(frequency) {
   if (!context) {
     context = await new AudioContext();
     await context.resume();
@@ -57,7 +57,7 @@ async function toggleSound() {
   } else {
     oscillator = context.createOscillator();
     oscillator.type = "sawtooth";
-    oscillator.frequency.setValueAtTime(0, 440);
+    oscillator.frequency.setValueAtTime(frequency, 0);
     oscillator.connect(filter);
     oscillator.start(0);
   }
@@ -66,8 +66,13 @@ async function toggleSound() {
 
 
 function keyListener(event) {
-  if (event.key === "s") {
-    toggleSound();
+  switch(event.key) {
+    case "a": toggleSound(440); break;
+    case "s": toggleSound(493.88); break;
+    case "e": toggleSound(523.25); break;
+    case "f": toggleSound(587.32); break;
+    case "g": toggleSound(659.25); break;
+    default: break;
   }
 }
 
@@ -79,7 +84,7 @@ filterSlider.addEventListener("input", event => {
 });
 
 
-soundButton.addEventListener("click", toggleSound);
+soundButton.addEventListener("click", () => toggleSound(440));
 document.addEventListener("keydown", keyListener);
 document.addEventListener("keyup", keyListener);
 batcaveButton.addEventListener("click", toggleReverb);
