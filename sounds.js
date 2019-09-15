@@ -1,11 +1,14 @@
 // Grab references to each control.
 const soundButton = document.querySelector("#sound-button");
 const filterSlider = document.querySelector("#muffler-slider");
-
+const batcaveButton = document.querySelector("#batcave-button")
+const BATCAVE_AUDIO_URL = "./batcave.wav";
 
 let context;
 let oscillator;
 let filter;
+let reverb;
+let reverbConnected = false;
 
 
 function linMap(value, iMin, iMax, oMin, oMax) {
@@ -14,11 +17,17 @@ function linMap(value, iMin, iMax, oMin, oMax) {
 }
 
 
-function changeFilter(value) {
+function setFilterFrequency(value) {
   if (!filter) return;
   const newValue = linMap(value, 0, 100, 0, 8000);
-  console.log(newValue);
   filter.frequency.setValueAtTime(newValue, context.currentTime);
+}
+
+
+async function fetchBatcaveAudio() {
+  const response = await fetch(BATCAVE_AUDIO_URL);
+  const arrayBuffer = await response.arrayBuffer();
+  return await context.decodeAudioData(arrayBuffer);
 }
 
 
@@ -27,8 +36,26 @@ function createFilter() {
   filter.type = "lowpass";
   filter.gain.setValueAtTime(3, 0);
   filter.Q.setValueAtTime(1.5, 0);
-  filter.frequency.setValueAtTime(4000, 0);
+  filter.frequency.setValueAtTime(800, 0);
   filter.connect(context.destination);
+}
+
+
+async function createReverb() {
+  reverb = context.createConvolver();
+  reverb.buffer = await fetchBatcaveAudio();
+  filter.connect(reverb);
+}
+
+
+function toggleReverb() {
+  if (reverbConnected) {
+    reverb.disconnect();
+    reverbConnected = false;
+  } else {
+    reverb.connect(context.destination);
+    reverbConnected = true;
+  }
 }
 
 
@@ -37,6 +64,7 @@ async function toggle() {
     context = new AudioContext();
     await context.resume();
     await createFilter();
+    await createReverb();
   }
 
   if (oscillator) {
@@ -45,7 +73,7 @@ async function toggle() {
   }
   else {
     oscillator = context.createOscillator();
-    oscillator.type = "sawtooth";
+    oscillator.type = "square";
     oscillator.frequency.setValueAtTime(0, 440);
     oscillator.connect(filter);
     oscillator.start(0);
@@ -53,10 +81,10 @@ async function toggle() {
 }
 
 
-soundButton.onclick = toggle;
+soundButton.addEventListener("click", toggle);
 filterSlider.addEventListener("input", event => {
   const value = parseFloat(event.target.value);
-  changeFilter(value);
+  setFilterFrequency(value);
 });
 
 
@@ -68,3 +96,5 @@ function keyListener(event) {
 
 document.addEventListener("keydown", keyListener);
 document.addEventListener("keyup", keyListener);
+
+batcaveButton.addEventListener("click", toggleReverb);

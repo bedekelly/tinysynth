@@ -122,7 +122,6 @@ h2 {
 
 .active {
   background: #3071a9 !important;
-  border-radius: 50% !important;
 }
 
 .bat {
@@ -140,6 +139,10 @@ h2 {
   border-radius: 10%;
   background: #3071a9;
   margin: 40px auto 0;
+}
+
+#batcave-button {
+  outline: 0;
 }
 
 .batcave.disabled .bat-container {

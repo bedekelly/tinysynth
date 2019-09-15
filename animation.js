@@ -35,6 +35,7 @@ function toggle() {
     stop = false;
     console.log(button);
     button.classList.add(["active"]);
+    timestamp = null;
     requestAnimationFrame(animate);
   } else {
     stop = true;
@@ -55,3 +56,17 @@ document.querySelector("#sound-button")
 
 document.addEventListener("keydown", animateKeyListener);
 document.addEventListener("keyup", animateKeyListener);
+
+
+
+let active = false;
+const batButton = document.querySelector("#batcave-button");
+batButton.addEventListener("click", event => {
+  if (active) {
+    batButton.classList.remove("active");
+    active = false;
+  } else {
+    batButton.classList.add("active");
+    active = true;
+  }
+});
