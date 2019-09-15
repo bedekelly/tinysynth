@@ -43,8 +43,13 @@ function toggle() {
 }
 
 function animateKeyListener(event) {
-  if (event.key === "s") {
-    toggle()
+  switch(event.key) {
+    case "a":
+    case "s":
+    case "e":
+    case "f":
+    case "g": toggle(); break;
+    default: break;
   }
 }
 
