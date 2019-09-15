@@ -1,8 +1,6 @@
-// Grab references to each control.
 const soundButton = document.querySelector("#sound-button");
 const filterSlider = document.querySelector("#muffler-slider");
-const batcaveButton = document.querySelector("#batcave-button")
-const BATCAVE_AUDIO_URL = "./batcave.wav";
+const batcaveButton = document.querySelector("#batcave-button");
 
 let context;
 let oscillator;
@@ -11,33 +9,19 @@ let reverb;
 let reverbConnected = false;
 
 
-function linMap(value, iMin, iMax, oMin, oMax) {
-  const fraction = (value - iMin) / (iMax - iMin);
-  return oMin + fraction * (oMax - oMin);
-}
-
-
-function setFilterFrequency(value) {
-  if (!filter) return;
-  const newValue = linMap(value, 0, 100, 0, 8000);
-  filter.frequency.setValueAtTime(newValue, context.currentTime);
+function createFilter() {
+  filter = context.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.Q.setValueAtTime(1.5, 0);
+  filter.frequency.setValueAtTime(400, 0);
+  filter.connect(context.destination);
 }
 
 
 async function fetchBatcaveAudio() {
-  const response = await fetch(BATCAVE_AUDIO_URL);
-  const arrayBuffer = await response.arrayBuffer();
-  return await context.decodeAudioData(arrayBuffer);
-}
-
-
-function createFilter() {
-  filter = context.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.gain.setValueAtTime(3, 0);
-  filter.Q.setValueAtTime(1.5, 0);
-  filter.frequency.setValueAtTime(800, 0);
-  filter.connect(context.destination);
+  const response = await fetch("batcave.wav");
+  const buffer = await response.arrayBuffer();
+  return context.decodeAudioData(buffer);
 }
 
 
@@ -59,42 +43,48 @@ function toggleReverb() {
 }
 
 
-async function toggle() {
-  if (context == null) {
-    context = new AudioContext();
+async function toggleSound(frequency) {
+  if (!context) {
+    context = await new AudioContext();
     await context.resume();
-    await createFilter();
-    await createReverb();
+    createFilter();
+    await createReverb()
   }
 
   if (oscillator) {
     oscillator.disconnect();
     oscillator = null;
-  }
-  else {
+  } else {
     oscillator = context.createOscillator();
-    oscillator.type = "square";
-    oscillator.frequency.setValueAtTime(0, 440);
+    oscillator.type = "sawtooth";
+    oscillator.frequency.setValueAtTime(frequency, 0);
     oscillator.connect(filter);
     oscillator.start(0);
   }
+
 }
-
-
-soundButton.addEventListener("click", toggle);
-filterSlider.addEventListener("input", event => {
-  const value = parseFloat(event.target.value);
-  setFilterFrequency(value);
-});
 
 
 function keyListener(event) {
-  if (event.key === "s") {
-    toggle();
+  switch(event.key) {
+    case "a": toggleSound(440); break;
+    case "s": toggleSound(493.88); break;
+    case "e": toggleSound(523.25); break;
+    case "f": toggleSound(587.32); break;
+    case "g": toggleSound(659.25); break;
+    default: break;
   }
 }
 
+
+filterSlider.addEventListener("input", event => {
+  const value = parseFloat(event.target.value);
+  const frequency = value * 80;
+  filter.frequency.setValueAtTime(frequency, 0);
+});
+
+
+soundButton.addEventListener("click", () => toggleSound(440));
 document.addEventListener("keydown", keyListener);
 document.addEventListener("keyup", keyListener);
-
 batcaveButton.addEventListener("click", toggleReverb);
